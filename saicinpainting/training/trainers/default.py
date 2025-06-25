@@ -95,6 +95,11 @@ class DefaultInpaintingTrainingModule(BaseInpaintingTrainingModule):
         original_mask = batch['mask']
         supervised_mask = batch['mask_for_losses']
 
+        # Объединяем img и mask для дискриминатора, если каналов 3
+        if img.shape[1] == 3:
+            img4 = torch.cat([img, original_mask], dim=1)
+        else:
+            img4 = img
         # L1
         l1_value = masked_l1_loss(predicted_img, img, supervised_mask,
                                   self.config.losses.l1.weight_known,
@@ -112,11 +117,11 @@ class DefaultInpaintingTrainingModule(BaseInpaintingTrainingModule):
         # discriminator
         # adversarial_loss calls backward by itself
         mask_for_discr = supervised_mask if self.distance_weighted_mask_for_discr else original_mask
-        self.adversarial_loss.pre_generator_step(real_batch=img, fake_batch=predicted_img,
+        self.adversarial_loss.pre_generator_step(real_batch=img4, fake_batch=predicted_img,
                                                  generator=self.generator, discriminator=self.discriminator)
-        discr_real_pred, discr_real_features = self.discriminator(img)
+        discr_real_pred, discr_real_features = self.discriminator(img4)
         discr_fake_pred, discr_fake_features = self.discriminator(predicted_img)
-        adv_gen_loss, adv_metrics = self.adversarial_loss.generator_loss(real_batch=img,
+        adv_gen_loss, adv_metrics = self.adversarial_loss.generator_loss(real_batch=img4,
                                                                          fake_batch=predicted_img,
                                                                          discr_real_pred=discr_real_pred,
                                                                          discr_fake_pred=discr_fake_pred,
@@ -146,11 +151,18 @@ class DefaultInpaintingTrainingModule(BaseInpaintingTrainingModule):
         metrics = {}
 
         predicted_img = batch[self.image_to_discriminator].detach()
-        self.adversarial_loss.pre_discriminator_step(real_batch=batch['image'], fake_batch=predicted_img,
+        img = batch['image']
+        original_mask = batch['mask']
+        # Объединяем img и mask для дискриминатора, если каналов 3
+        if img.shape[1] == 3:
+            img4 = torch.cat([img, original_mask], dim=1)
+        else:
+            img4 = img
+        self.adversarial_loss.pre_discriminator_step(real_batch=img4, fake_batch=predicted_img,
                                                      generator=self.generator, discriminator=self.discriminator)
-        discr_real_pred, discr_real_features = self.discriminator(batch['image'])
+        discr_real_pred, discr_real_features = self.discriminator(img4)
         discr_fake_pred, discr_fake_features = self.discriminator(predicted_img)
-        adv_discr_loss, adv_metrics = self.adversarial_loss.discriminator_loss(real_batch=batch['image'],
+        adv_discr_loss, adv_metrics = self.adversarial_loss.discriminator_loss(real_batch=img4,
                                                                                fake_batch=predicted_img,
                                                                                discr_real_pred=discr_real_pred,
                                                                                discr_fake_pred=discr_fake_pred,
