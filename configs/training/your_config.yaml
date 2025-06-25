@@ -23,7 +23,7 @@ generator:
   n_downsampling: 3
   n_blocks: 8
   init_conv_kwargs:
-    ratio_gin: 0.75
+    ratio_gin: 0.0
     ratio_gout: 0.75
   downsample_conv_kwargs:
     ratio_gin: 0.75
