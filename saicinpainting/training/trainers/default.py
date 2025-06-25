@@ -56,6 +56,10 @@ class DefaultInpaintingTrainingModule(BaseInpaintingTrainingModule):
         img = batch['image']
         mask = batch['mask']
 
+        # Явно оставляем только первый канал маски, если каналов больше одного
+        if mask.dim() == 4 and mask.shape[1] != 1:
+            mask = mask[:, :1, ...]
+
         masked_img = img * (1 - mask)
 
         if self.add_noise_kwargs is not None:
