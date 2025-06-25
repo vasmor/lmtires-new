@@ -43,13 +43,7 @@ class InpaintingTrainDataset(Dataset):
         mask = self.mask_generator(img, iter_i=self.iter_i)
         self.iter_i += 1
         print(f"[DEBUG] img shape: {img.shape}, mask shape: {mask.shape}")
-        if img.shape[0] == 3:
-            input4 = torch.cat([torch.from_numpy(img), torch.from_numpy(mask)], dim=0)
-        elif img.shape[0] == 4:
-            input4 = torch.from_numpy(img)
-        else:
-            raise RuntimeError(f"[ERROR] Unexpected number of channels in img: {img.shape[0]}, shape: {img.shape}")
-        return dict(image=input4.numpy(),
+        return dict(image=img,
                     mask=mask)
 
 
@@ -66,14 +60,8 @@ class InpaintingTrainWebDataset(IterableDataset):
             img = np.transpose(img, (2, 0, 1))
             mask = self.mask_generator(img, iter_i=iter_i)
             print(f"[DEBUG] img shape: {img.shape}, mask shape: {mask.shape}")
-            if img.shape[0] == 3:
-                input4 = torch.cat([torch.from_numpy(img), torch.from_numpy(mask)], dim=0)
-            elif img.shape[0] == 4:
-                input4 = torch.from_numpy(img)
-            else:
-                raise RuntimeError(f"[ERROR] Unexpected number of channels in img: {img.shape[0]}, shape: {img.shape}")
-            yield dict(image=input4.numpy(),
-                       mask=mask)
+            yield dict(image=img,
+                        mask=mask)
 
 
 class ImgSegmentationDataset(Dataset):
