@@ -297,9 +297,9 @@ class MixedMaskGenerator:
             self.gens.append(RandomRectangleMaskGenerator(**box_kwargs))
 
         if segm_proba > 0:
-            self.probas.append(segm_proba)
             if segm_kwargs is None:
                 segm_kwargs = {}
+            self.probas.append(segm_proba)
             self.gens.append(RandomSegmentationMaskGenerator(**segm_kwargs))
 
         if squares_proba > 0:
