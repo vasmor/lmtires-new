@@ -1,7 +1,7 @@
 data:
   train:
     indir: /content/lama_dataset/images
-    mask_indir: /content/lama_dataset/masks
+    maskdir: /content/lama_dataset/masks
     img_suffix: .png
     mask_suffix: .png
     batch_size: 4
@@ -9,7 +9,7 @@ data:
     shuffle: true
   val:
     indir: /content/lama_dataset/images
-    mask_indir: /content/lama_dataset/masks
+    maskdir: /content/lama_dataset/masks
     img_suffix: .png
     mask_suffix: .png
     batch_size: 4
