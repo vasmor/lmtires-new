@@ -68,7 +68,11 @@ class RandomIrregularMaskGenerator:
                                           max_width=cur_max_width, min_times=self.min_times, max_times=cur_max_times,
                                           draw_method=self.draw_method)
         mask = mask_inside_circle(mask, margin_ratio=0.01)
-        return mask
+        if mask.ndim == 2:
+            mask = mask[None, ...]
+        elif mask.shape[0] != 1:
+            mask = mask[:1, ...]
+        return mask.astype(np.float32)
 
 
 def make_random_rectangle_mask(shape, margin=10, bbox_min_size=30, bbox_max_size=100, min_times=0, max_times=3):
@@ -102,7 +106,11 @@ class RandomRectangleMaskGenerator:
                                           bbox_max_size=cur_bbox_max_size, min_times=self.min_times,
                                           max_times=cur_max_times)
         mask = mask_inside_circle(mask, margin_ratio=0.01)
-        return mask
+        if mask.ndim == 2:
+            mask = mask[None, ...]
+        elif mask.shape[0] != 1:
+            mask = mask[:1, ...]
+        return mask.astype(np.float32)
 
 
 class RandomSegmentationMaskGenerator:
@@ -118,7 +126,11 @@ class RandomSegmentationMaskGenerator:
         masks = [m for m in masks if len(np.unique(m)) > 1]
         mask = np.random.choice(masks)
         mask = mask_inside_circle(mask, margin_ratio=0.01)
-        return mask
+        if mask.ndim == 2:
+            mask = mask[None, ...]
+        elif mask.shape[0] != 1:
+            mask = mask[:1, ...]
+        return mask.astype(np.float32)
 
 
 def make_random_superres_mask(shape, min_step=2, max_step=4, min_width=1, max_width=3):
@@ -144,7 +156,12 @@ class RandomSuperresMaskGenerator:
         self.kwargs = kwargs
 
     def __call__(self, img, iter_i=None):
-        return make_random_superres_mask(img.shape[1:], **self.kwargs)
+        mask = make_random_superres_mask(img.shape[1:], **self.kwargs)
+        if mask.ndim == 2:
+            mask = mask[None, ...]
+        elif mask.shape[0] != 1:
+            mask = mask[:1, ...]
+        return mask.astype(np.float32)
 
 
 class DumbAreaMaskGenerator:
@@ -176,7 +193,11 @@ class DumbAreaMaskGenerator:
         x1, x2 = self._random_vector(width)
         y1, y2 = self._random_vector(height)
         mask[x1:x2, y1:y2] = 1
-        return mask[None, ...]
+        if mask.ndim == 2:
+            mask = mask[None, ...]
+        elif mask.shape[0] != 1:
+            mask = mask[:1, ...]
+        return mask.astype(np.float32)
 
 
 class OutpaintingMaskGenerator:
@@ -252,7 +273,11 @@ class OutpaintingMaskGenerator:
         if not at_least_one_mask_applied:
             idx = self.rnd.choice(range(len(coords)), p=np.array(self.probs)/sum(self.probs))
             mask = self.apply_padding(mask=mask, coord=coords[idx])
-        return mask[None, ...]
+        if mask.ndim == 2:
+            mask = mask[None, ...]
+        elif mask.shape[0] != 1:
+            mask = mask[:1, ...]
+        return mask.astype(np.float32)
 
 
 class RandomEllipseMaskGenerator:
@@ -266,7 +291,11 @@ class RandomEllipseMaskGenerator:
         c, height, width = img.shape
         mask = generate_ellipse_mask(height, width, self.min_axis, self.max_axis, self.min_times, self.max_times)
         mask = mask_inside_circle(mask, margin_ratio=0.01)
-        return mask[None, ...].astype(np.float32)
+        if mask.ndim == 2:
+            mask = mask[None, ...]
+        elif mask.shape[0] != 1:
+            mask = mask[:1, ...]
+        return mask.astype(np.float32)
 
 
 class MixedMaskGenerator:
