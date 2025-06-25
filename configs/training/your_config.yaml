@@ -1,15 +1,19 @@
 data:
   train:
     indir: /content/lama_dataset/images
-    maskdir: /content/lama_dataset/masks
+    mask_indir: /content/lama_dataset/masks
     img_suffix: .png
     mask_suffix: .png
+    batch_size: 4
+    num_workers: 2
     shuffle: true
   val:
     indir: /content/lama_dataset/images
-    maskdir: /content/lama_dataset/masks
+    mask_indir: /content/lama_dataset/masks
     img_suffix: .png
     mask_suffix: .png
+    batch_size: 4
+    num_workers: 2
     shuffle: false
 
 generator:
@@ -52,8 +56,6 @@ evaluator:
   kind: default
 
 training:
-  batch_size: 4
-  num_workers: 2
   epochs: 10
   save_interval: 1
   out_dir: /content/drive/MyDrive/lama_checkpoints
@@ -71,7 +73,8 @@ training_model:
 trainer:
   kind: default
   kwargs:
-    gpus: 1
+    accelerator: gpu
+    devices: 1
     max_epochs: 10
     precision: 32
     accumulate_grad_batches: 1
