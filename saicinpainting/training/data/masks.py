@@ -7,7 +7,7 @@ from enum import Enum
 import cv2
 import numpy as np
 
-from saicinpainting.evaluation.masks.mask import SegmentationMask, generate_ellipse_mask
+from saicinpainting.evaluation.masks.mask import SegmentationMask, generate_ellipse_mask, mask_inside_circle
 from saicinpainting.utils import LinearRamp
 
 LOGGER = logging.getLogger(__name__)
@@ -64,9 +64,11 @@ class RandomIrregularMaskGenerator:
         cur_max_len = int(max(1, self.max_len * coef))
         cur_max_width = int(max(1, self.max_width * coef))
         cur_max_times = int(self.min_times + 1 + (self.max_times - self.min_times) * coef)
-        return make_random_irregular_mask(img.shape[1:], max_angle=self.max_angle, max_len=cur_max_len,
+        mask = make_random_irregular_mask(img.shape[1:], max_angle=self.max_angle, max_len=cur_max_len,
                                           max_width=cur_max_width, min_times=self.min_times, max_times=cur_max_times,
                                           draw_method=self.draw_method)
+        mask = mask_inside_circle(mask, margin_ratio=0.01)
+        return mask
 
 
 def make_random_rectangle_mask(shape, margin=10, bbox_min_size=30, bbox_max_size=100, min_times=0, max_times=3):
@@ -96,9 +98,11 @@ class RandomRectangleMaskGenerator:
         coef = self.ramp(iter_i) if (self.ramp is not None) and (iter_i is not None) else 1
         cur_bbox_max_size = int(self.bbox_min_size + 1 + (self.bbox_max_size - self.bbox_min_size) * coef)
         cur_max_times = int(self.min_times + (self.max_times - self.min_times) * coef)
-        return make_random_rectangle_mask(img.shape[1:], margin=self.margin, bbox_min_size=self.bbox_min_size,
+        mask = make_random_rectangle_mask(img.shape[1:], margin=self.margin, bbox_min_size=self.bbox_min_size,
                                           bbox_max_size=cur_bbox_max_size, min_times=self.min_times,
                                           max_times=cur_max_times)
+        mask = mask_inside_circle(mask, margin_ratio=0.01)
+        return mask
 
 
 class RandomSegmentationMaskGenerator:
@@ -112,7 +116,9 @@ class RandomSegmentationMaskGenerator:
 
         masks = self.impl.get_masks(np.transpose(img, (1, 2, 0)))
         masks = [m for m in masks if len(np.unique(m)) > 1]
-        return np.random.choice(masks)
+        mask = np.random.choice(masks)
+        mask = mask_inside_circle(mask, margin_ratio=0.01)
+        return mask
 
 
 def make_random_superres_mask(shape, min_step=2, max_step=4, min_width=1, max_width=3):
@@ -259,6 +265,7 @@ class RandomEllipseMaskGenerator:
     def __call__(self, img, iter_i=None, raw_image=None):
         c, height, width = img.shape
         mask = generate_ellipse_mask(height, width, self.min_axis, self.max_axis, self.min_times, self.max_times)
+        mask = mask_inside_circle(mask, margin_ratio=0.01)
         return mask[None, ...].astype(np.float32)
 
 
