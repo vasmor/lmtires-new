@@ -43,9 +43,8 @@ class InpaintingTrainDataset(Dataset):
         mask = self.mask_generator(img, iter_i=self.iter_i)
         self.iter_i += 1
         input4 = torch.cat([torch.from_numpy(img), torch.from_numpy(mask)], dim=0)
-        return dict(image=img,
-                    mask=mask,
-                    input=input4.numpy())
+        return dict(image=input4.numpy(),
+                    mask=mask)
 
 
 class InpaintingTrainWebDataset(IterableDataset):
@@ -61,9 +60,8 @@ class InpaintingTrainWebDataset(IterableDataset):
             img = np.transpose(img, (2, 0, 1))
             mask = self.mask_generator(img, iter_i=iter_i)
             input4 = torch.cat([torch.from_numpy(img), torch.from_numpy(mask)], dim=0)
-            yield dict(image=img,
-                       mask=mask,
-                       input=input4.numpy())
+            yield dict(image=input4.numpy(),
+                       mask=mask)
 
 
 class ImgSegmentationDataset(Dataset):
