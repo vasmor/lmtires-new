@@ -35,14 +35,12 @@ discriminator:
 losses:
   l1:
     kind: l1
-    kwargs: {}
     weight_known: 0
   adversarial:
     kind: r1
   perceptual:
-    weight: 0.05
     kind: perceptual
-    kwargs: {}
+    weight: 0.05
 
 evaluator:
   kind: default
@@ -68,8 +66,8 @@ training_model:
 trainer:
   kind: default
   kwargs:
-    accelerator: gpu
-    gpus: 1
+    accelerator: gpu   # или cpu, если нет CUDA
+    devices: 1
     max_epochs: 10
     precision: 32
     accumulate_grad_batches: 1
@@ -91,24 +89,20 @@ trainer:
 optimizers:
   generator:
     kind: adam
-    kwargs:
-      lr: 0.0001
-      weight_decay: 0.0
+    lr: 0.0001
+    weight_decay: 0.0
   discriminator:
     kind: adam
-    kwargs:
-      lr: 0.0001
-      weight_decay: 0.0
+    lr: 0.0001
+    weight_decay: 0.0
+
 schedulers:
   generator:
     kind: null
-    kwargs: {}
   discriminator:
     kind: null
-    kwargs: {}
 
 augmentation:
   kind: null
-  kwargs: {}
 
 callbacks: {}
