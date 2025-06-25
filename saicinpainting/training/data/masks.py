@@ -272,7 +272,7 @@ class RandomEllipseMaskGenerator:
 class MixedMaskGenerator:
     def __init__(self, irregular_proba=1/3, irregular_kwargs=None,
                  box_proba=1/3, box_kwargs=None,
-                 segm_proba=1/3, segm_kwargs=None,
+                 segm_proba=0, segm_kwargs=None,
                  squares_proba=0, squares_kwargs=None,
                  ellipse_proba=0, ellipse_kwargs=None,
                  superres_proba=0, superres_kwargs=None,
