@@ -4,6 +4,7 @@ from copy import deepcopy
 import numpy as np
 from skimage import img_as_ubyte
 from skimage.transform import rescale, resize
+from skimage.draw import ellipse
 try:
     from detectron2 import model_zoo
     from detectron2.config import get_cfg
@@ -427,3 +428,26 @@ def propose_random_square_crop(mask, min_overlap=0.5):
         bottom_border = max(top_border + 1, min(height - crop_size, obj_top + obj_height * min_overlap))
         start_y = np.random.randint(top_border, bottom_border)
         return 0, start_y, width, start_y + crop_size
+
+
+def generate_ellipse_mask(height, width, min_axis, max_axis, min_times, max_times):
+    """
+    Генерирует бинарную маску с одним или несколькими эллипсами.
+    :param height: высота маски
+    :param width: ширина маски
+    :param min_axis: минимальная длина полуоси
+    :param max_axis: максимальная длина полуоси
+    :param min_times: минимальное количество эллипсов
+    :param max_times: максимальное количество эллипсов
+    :return: np.ndarray (bool)
+    """
+    mask = np.zeros((height, width), dtype=bool)
+    n_ellipses = np.random.randint(min_times, max_times + 1)
+    for _ in range(n_ellipses):
+        r_radius = np.random.randint(min_axis, max_axis + 1)
+        c_radius = np.random.randint(min_axis, max_axis + 1)
+        r_center = np.random.randint(r_radius, height - r_radius)
+        c_center = np.random.randint(c_radius, width - c_radius)
+        rr, cc = ellipse(r_center, c_center, r_radius, c_radius, shape=mask.shape)
+        mask[rr, cc] = True
+    return mask
