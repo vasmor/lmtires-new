@@ -20,14 +20,12 @@ mask_generator_kwargs:
   squares_proba: 0.1
   segm_proba: 0.1
 
-  # ellipse_proba: 0.1  # Для будущей поддержки эллипсов
-  # ellipse_kwargs:
-  #   min_axis: 10
-  #   max_axis: 150
-  #   max_times: 3
-  #   min_times: 1
-
-  variants_n: 7
+  ellipse_proba: 0.2
+  ellipse_kwargs:
+    min_axis: 10
+    max_axis: 120
+    min_times: 1
+    max_times: 3
 
   # mask_circle_limit: true  # Для будущего ограничения по кругу
   # circle_margin: 0.01
