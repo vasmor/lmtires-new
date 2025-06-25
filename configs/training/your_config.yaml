@@ -2,16 +2,12 @@ data:
   train:
     indir: /content/lama_dataset/images
     # maskdir: /content/lama_real_masks/masks
-    img_suffix: .png
-    # mask_suffix: .png
     batch_size: 4
     num_workers: 2
     shuffle: true
   val:
     indir: /content/lama_dataset/images
     # maskdir: /content/lama_real_masks/masks
-    img_suffix: .png
-    # mask_suffix: .png
     batch_size: 4
     num_workers: 2
     shuffle: false
