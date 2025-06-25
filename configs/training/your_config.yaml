@@ -1,10 +1,18 @@
 data:
-  kind: default
-  root_dir: /content/lama_dataset
-  img_suffix: .png
-  mask_suffix: .png
-  img_dir: images
-  mask_dir: masks
+  train:
+    kind: default
+    root_dir: /content/lama_dataset
+    img_suffix: .png
+    mask_suffix: .png
+    img_dir: images
+    mask_dir: masks
+  val:
+    kind: default
+    root_dir: /content/lama_dataset
+    img_suffix: .png
+    mask_suffix: .png
+    img_dir: images
+    mask_dir: masks
 
 generator:
   kind: ffc_resnet
@@ -66,7 +74,7 @@ training_model:
 trainer:
   kind: default
   kwargs:
-    accelerator: gpu   # или cpu, если нет CUDA
+    accelerator: gpu
     devices: 1
     max_epochs: 10
     precision: 32
