@@ -7,7 +7,7 @@ from enum import Enum
 import cv2
 import numpy as np
 
-from saicinpainting.evaluation.masks.mask import SegmentationMask
+from saicinpainting.evaluation.masks.mask import SegmentationMask, generate_ellipse_mask
 from saicinpainting.utils import LinearRamp
 
 LOGGER = logging.getLogger(__name__)
@@ -249,11 +249,25 @@ class OutpaintingMaskGenerator:
         return mask[None, ...]
 
 
+class RandomEllipseMaskGenerator:
+    def __init__(self, min_axis=10, max_axis=150, min_times=1, max_times=3):
+        self.min_axis = min_axis
+        self.max_axis = max_axis
+        self.min_times = min_times
+        self.max_times = max_times
+
+    def __call__(self, img, iter_i=None, raw_image=None):
+        c, height, width = img.shape
+        mask = generate_ellipse_mask(height, width, self.min_axis, self.max_axis, self.min_times, self.max_times)
+        return mask[None, ...].astype(np.float32)
+
+
 class MixedMaskGenerator:
     def __init__(self, irregular_proba=1/3, irregular_kwargs=None,
                  box_proba=1/3, box_kwargs=None,
                  segm_proba=1/3, segm_kwargs=None,
                  squares_proba=0, squares_kwargs=None,
+                 ellipse_proba=0, ellipse_kwargs=None,
                  superres_proba=0, superres_kwargs=None,
                  outpainting_proba=0, outpainting_kwargs=None,
                  invert_proba=0):
@@ -289,6 +303,12 @@ class MixedMaskGenerator:
                 squares_kwargs = dict(squares_kwargs)
             squares_kwargs['draw_method'] = DrawMethod.SQUARE
             self.gens.append(RandomIrregularMaskGenerator(**squares_kwargs))
+
+        if ellipse_proba > 0:
+            self.probas.append(ellipse_proba)
+            if ellipse_kwargs is None:
+                ellipse_kwargs = {}
+            self.gens.append(RandomEllipseMaskGenerator(**ellipse_kwargs))
 
         if superres_proba > 0:
             self.probas.append(superres_proba)
