@@ -48,6 +48,10 @@ losses:
     weight_missing: 1
   adversarial:
     kind: r1
+    weight: 10
+    gp_coef: 0.001
+    mask_as_fake_target: true
+    allow_scale_mask: true
   perceptual:
     kind: perceptual
     weight: 0.05
