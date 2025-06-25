@@ -2,15 +2,17 @@ data:
   train:
     indir: /content/lama_dataset/images
     # maskdir: /content/lama_real_masks/masks
-    batch_size: 4
-    num_workers: 2
-    shuffle: true
+    dataloader_kwargs:
+      batch_size: 4
+      num_workers: 2
+      shuffle: true
   val:
     indir: /content/lama_dataset/images
     # maskdir: /content/lama_real_masks/masks
-    batch_size: 4
-    num_workers: 2
-    shuffle: false
+    dataloader_kwargs:
+      batch_size: 4
+      num_workers: 2
+      shuffle: false
 
 generator:
   kind: ffc_resnet
