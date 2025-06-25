@@ -135,4 +135,4 @@ mask_gen_kwargs:
     min_times: 1
     max_times: 3
   squares_proba: 0
-  segm_proba: 0.1
+  segm_proba: 0
