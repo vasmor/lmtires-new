@@ -42,7 +42,6 @@ class InpaintingTrainDataset(Dataset):
         # TODO: maybe generate mask before augmentations? slower, but better for segmentation-based masks
         mask = self.mask_generator(img, iter_i=self.iter_i)
         self.iter_i += 1
-        print(f"[DEBUG] img shape: {img.shape}, mask shape: {mask.shape}")
         return dict(image=img,
                     mask=mask)
 
@@ -59,7 +58,6 @@ class InpaintingTrainWebDataset(IterableDataset):
             img = self.transform(image=img)['image']
             img = np.transpose(img, (2, 0, 1))
             mask = self.mask_generator(img, iter_i=iter_i)
-            print(f"[DEBUG] img shape: {img.shape}, mask shape: {mask.shape}")
             yield dict(image=img,
                         mask=mask)
 
