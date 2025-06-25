@@ -42,10 +42,13 @@ class InpaintingTrainDataset(Dataset):
         # TODO: maybe generate mask before augmentations? slower, but better for segmentation-based masks
         mask = self.mask_generator(img, iter_i=self.iter_i)
         self.iter_i += 1
+        print(f"[DEBUG] img shape: {img.shape}, mask shape: {mask.shape}")
         if img.shape[0] == 3:
             input4 = torch.cat([torch.from_numpy(img), torch.from_numpy(mask)], dim=0)
-        else:
+        elif img.shape[0] == 4:
             input4 = torch.from_numpy(img)
+        else:
+            raise RuntimeError(f"[ERROR] Unexpected number of channels in img: {img.shape[0]}, shape: {img.shape}")
         return dict(image=input4.numpy(),
                     mask=mask)
 
@@ -62,10 +65,13 @@ class InpaintingTrainWebDataset(IterableDataset):
             img = self.transform(image=img)['image']
             img = np.transpose(img, (2, 0, 1))
             mask = self.mask_generator(img, iter_i=iter_i)
+            print(f"[DEBUG] img shape: {img.shape}, mask shape: {mask.shape}")
             if img.shape[0] == 3:
                 input4 = torch.cat([torch.from_numpy(img), torch.from_numpy(mask)], dim=0)
-            else:
+            elif img.shape[0] == 4:
                 input4 = torch.from_numpy(img)
+            else:
+                raise RuntimeError(f"[ERROR] Unexpected number of channels in img: {img.shape[0]}, shape: {img.shape}")
             yield dict(image=input4.numpy(),
                        mask=mask)
 
