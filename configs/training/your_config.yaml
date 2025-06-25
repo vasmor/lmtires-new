@@ -51,6 +51,9 @@ losses:
   perceptual:
     kind: perceptual
     weight: 0.05
+  feature_matching:
+    kind: feature_matching
+    weight: 0.0
 
 evaluator:
   kind: default

@@ -135,7 +135,7 @@ class DefaultInpaintingTrainingModule(BaseInpaintingTrainingModule):
         metrics.update(add_prefix_to_keys(adv_metrics, 'adv_'))
 
         # feature matching
-        if self.config.losses.feature_matching.weight > 0:
+        if getattr(self.config.losses, "feature_matching", None) is not None and self.config.losses.feature_matching.weight > 0:
             need_mask_in_fm = OmegaConf.to_container(self.config.losses.feature_matching).get('pass_mask', False)
             mask_for_fm = supervised_mask if need_mask_in_fm else None
             fm_value = feature_matching_loss(discr_fake_features, discr_real_features,
