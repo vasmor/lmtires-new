@@ -357,20 +357,3 @@ def get_mask_generator(kind, kwargs):
     else:
         raise NotImplementedError(f"No such generator kind = {kind}")
     return cl(**kwargs)
-
-
-def mask_inside_circle(mask, margin_ratio=0.01):
-    """
-    Обрезает маску по вписанному кругу с отступом margin_ratio (доля от размера).
-    :param mask: np.ndarray (H, W) или (1, H, W)
-    :param margin_ratio: отступ от края (0.01 = 1%)
-    :return: np.ndarray такой же формы
-    """
-    if mask.ndim == 3:
-        mask = mask[0]
-    h, w = mask.shape
-    cy, cx = h // 2, w // 2
-    r = int(min(h, w) * 0.5 * (1 - 2 * margin_ratio))
-    Y, X = np.ogrid[:h, :w]
-    circle = (Y - cy) ** 2 + (X - cx) ** 2 <= r ** 2
-    return (mask & circle).astype(mask.dtype)

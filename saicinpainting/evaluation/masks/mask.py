@@ -451,3 +451,20 @@ def generate_ellipse_mask(height, width, min_axis, max_axis, min_times, max_time
         rr, cc = ellipse(r_center, c_center, r_radius, c_radius, shape=mask.shape)
         mask[rr, cc] = True
     return mask
+
+
+def mask_inside_circle(mask, margin_ratio=0.01):
+    """
+    Обрезает маску по вписанному кругу с отступом margin_ratio (доля от размера).
+    :param mask: np.ndarray (H, W) или (1, H, W)
+    :param margin_ratio: отступ от края (0.01 = 1%)
+    :return: np.ndarray такой же формы
+    """
+    if mask.ndim == 3:
+        mask = mask[0]
+    h, w = mask.shape
+    cy, cx = h // 2, w // 2
+    r = int(min(h, w) * 0.5 * (1 - 2 * margin_ratio))
+    Y, X = np.ogrid[:h, :w]
+    circle = (Y - cy) ** 2 + (X - cx) ** 2 <= r ** 2
+    return (mask & circle).astype(mask.dtype)
