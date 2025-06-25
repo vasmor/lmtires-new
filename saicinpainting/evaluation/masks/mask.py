@@ -467,4 +467,7 @@ def mask_inside_circle(mask, margin_ratio=0.01):
     r = int(min(h, w) * 0.5 * (1 - 2 * margin_ratio))
     Y, X = np.ogrid[:h, :w]
     circle = (Y - cy) ** 2 + (X - cx) ** 2 <= r ** 2
-    return (mask & circle).astype(mask.dtype)
+    # Приводим к bool для корректной работы побитового AND
+    mask_bool = mask.astype(bool)
+    circle_bool = circle.astype(bool)
+    return (mask_bool & circle_bool).astype(mask.dtype)
