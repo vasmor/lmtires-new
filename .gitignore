@@ -135,3 +135,12 @@ dmypy.json
 .vscode/
 ## vim
 *.sw?
+
+# Large model files and outputs
+*.ckpt
+*.pth
+*.pt
+*.h5
+*.onnx
+outputs/
+models/
