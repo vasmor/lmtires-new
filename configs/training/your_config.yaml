@@ -60,7 +60,7 @@ losses:
     weight: 0.0
 
 evaluator:
-  kind: default
+  kind: default_inpainted
 
 training:
   epochs: 10
@@ -68,8 +68,8 @@ training:
   out_dir: /content/drive/MyDrive/lama_checkpoints
 
 visualizer:
-  kind: noop
-  outdir: /content/lama/outputs/visualization
+  kind: directory
+  outdir: outputs/visualization
 
 location:
   tb_dir: ./tb_logs

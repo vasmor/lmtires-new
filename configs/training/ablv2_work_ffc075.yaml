@@ -1,3 +1,4 @@
+# ВНИМАНИЕ: Включена визуализация inpainted-результатов в папку outputs/visualization
 run_title: ''
 
 training_model:
@@ -34,3 +35,7 @@ defaults:
   - evaluator: default_inpainted
   - trainer: any_gpu_large_ssim_ddp_final
   - hydra: overrides
+
+visualizer:
+  kind: directory
+  outdir: outputs/visualization
