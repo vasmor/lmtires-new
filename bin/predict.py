@@ -38,6 +38,13 @@ LOGGER = logging.getLogger(__name__)
 @hydra.main(config_path='../configs/prediction', config_name='default.yaml')
 def main(predict_config: OmegaConf):
     try:
+        print(f"[DEBUG] indir: {predict_config.indir}")
+        print(f"[DEBUG] outdir: {predict_config.outdir}")
+        print(f"[DEBUG] model.path: {predict_config.model.path}")
+        print(f"[DEBUG] model.checkpoint: {predict_config.model.checkpoint}")
+        print(f"[DEBUG] dataset.img_suffix: {predict_config.dataset.img_suffix}")
+        print(f"[DEBUG] device: {predict_config.get('device', 'cuda')}")
+        print("[DEBUG] --- Начало инференса ---")
         if sys.platform != 'win32':
             register_debug_signal_handlers()  # kill -10 <pid> will result in traceback dumped into log
 
@@ -64,11 +71,19 @@ def main(predict_config: OmegaConf):
             predict_config.indir += '/'
 
         dataset = make_default_val_dataset(predict_config.indir, **predict_config.dataset)
+        print(f"[DEBUG] Найдено изображений: {len(dataset)}")
+        print(f"[DEBUG] Примеры mask_filenames: {dataset.mask_filenames[:3]}")
+        print(f"[DEBUG] Примеры img_filenames: {dataset.img_filenames[:3]}")
         for img_i in tqdm.trange(len(dataset)):
             mask_fname = dataset.mask_filenames[img_i]
+            mask_base = os.path.splitext(mask_fname[len(predict_config.indir):])[0]
+            if mask_base.endswith('_mask'):
+                out_base = mask_base[:-5] + '_inpainted'
+            else:
+                out_base = mask_base + '_inpainted'
             cur_out_fname = os.path.join(
                 predict_config.outdir, 
-                os.path.splitext(mask_fname[len(predict_config.indir):])[0] + out_ext
+                out_base + out_ext
             )
             os.makedirs(os.path.dirname(cur_out_fname), exist_ok=True)
             batch = default_collate([dataset[img_i]])
@@ -92,11 +107,13 @@ def main(predict_config: OmegaConf):
             cur_res = np.clip(cur_res * 255, 0, 255).astype('uint8')
             cur_res = cv2.cvtColor(cur_res, cv2.COLOR_RGB2BGR)
             cv2.imwrite(cur_out_fname, cur_res)
+        print("[DEBUG] --- Инференс завершён ---")
 
     except KeyboardInterrupt:
         LOGGER.warning('Interrupted by user')
     except Exception as ex:
         LOGGER.critical(f'Prediction failed due to {ex}:\n{traceback.format_exc()}')
+        print(f'[ERROR] Prediction failed due to {ex}:\n{traceback.format_exc()}')
         sys.exit(1)
 
 
