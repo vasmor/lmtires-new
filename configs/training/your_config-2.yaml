@@ -82,7 +82,7 @@ trainer:
   kwargs:
     accelerator: gpu
     devices: 1
-    max_epochs: 20
+    max_epochs: 40
     precision: 16
     accumulate_grad_batches: 1
     gradient_clip_val: 0.0
