@@ -61,7 +61,14 @@ def main(config: OmegaConf):
             default_root_dir=os.getcwd(),
             **trainer_kwargs
         )
-        trainer.fit(training_model)
+
+        checkpoint_path = os.environ.get('CKPT_PATH', None)
+        if checkpoint_path:
+            LOGGER.info(f"[LaMa train.py] Запуск с ckpt_path: {checkpoint_path}")
+            trainer.fit(training_model, ckpt_path=checkpoint_path)
+        else:
+            LOGGER.info("[LaMa train.py] Запуск без ckpt_path (обучение с нуля)")
+            trainer.fit(training_model)
     except KeyboardInterrupt:
         LOGGER.warning('Interrupted by user')
     except Exception as ex:
