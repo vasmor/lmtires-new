@@ -3,14 +3,14 @@ data:
     indir: /content/lama_dataset/images
     # maskdir: /content/lama_real_masks/masks
     dataloader_kwargs:
-      batch_size: 4
+      batch_size: 8
       num_workers: 2
       shuffle: true
   val:
     indir: /content/lama_dataset/images
     # maskdir: /content/lama_real_masks/masks
     dataloader_kwargs:
-      batch_size: 4
+      batch_size: 8
       num_workers: 2
       shuffle: false
   visual_test: null
