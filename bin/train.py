@@ -25,11 +25,20 @@ from saicinpainting.utils import register_debug_signal_handlers, handle_ddp_subp
 
 LOGGER = logging.getLogger(__name__)
 
-orig_pl_load = cloud_io.pl_load
-def patched_pl_load(*args, **kwargs):
-    kwargs['weights_only'] = False
-    return orig_pl_load(*args, **kwargs)
-cloud_io.pl_load = patched_pl_load
+if hasattr(cloud_io, "load"):
+    orig_pl_load = cloud_io.load
+    def patched_pl_load(*args, **kwargs):
+        kwargs['weights_only'] = False
+        return orig_pl_load(*args, **kwargs)
+    cloud_io.load = patched_pl_load
+elif hasattr(cloud_io, "pl_load"):
+    orig_pl_load = cloud_io.pl_load
+    def patched_pl_load(*args, **kwargs):
+        kwargs['weights_only'] = False
+        return orig_pl_load(*args, **kwargs)
+    cloud_io.pl_load = patched_pl_load
+else:
+    print("Не удалось найти функцию загрузки чекпойнта в pytorch_lightning.utilities.cloud_io")
 
 @handle_ddp_subprocess()
 @hydra.main(config_path='../configs/training', config_name='tiny_test.yaml')
