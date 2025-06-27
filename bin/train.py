@@ -4,6 +4,7 @@ import logging
 import os
 import sys
 import traceback
+import torch
 
 os.environ['OMP_NUM_THREADS'] = '1'
 os.environ['OPENBLAS_NUM_THREADS'] = '1'
@@ -17,7 +18,6 @@ from pytorch_lightning import Trainer
 from pytorch_lightning.callbacks import ModelCheckpoint
 from pytorch_lightning.loggers import TensorBoardLogger
 from pytorch_lightning.plugins import DDPPlugin
-import pytorch_lightning.utilities.cloud_io as cloud_io
 
 from saicinpainting.training.trainers import make_training_model
 from saicinpainting.utils import register_debug_signal_handlers, handle_ddp_subprocess, handle_ddp_parent_process, \
@@ -25,20 +25,11 @@ from saicinpainting.utils import register_debug_signal_handlers, handle_ddp_subp
 
 LOGGER = logging.getLogger(__name__)
 
-if hasattr(cloud_io, "load"):
-    orig_pl_load = cloud_io.load
-    def patched_pl_load(*args, **kwargs):
-        kwargs['weights_only'] = False
-        return orig_pl_load(*args, **kwargs)
-    cloud_io.load = patched_pl_load
-elif hasattr(cloud_io, "pl_load"):
-    orig_pl_load = cloud_io.pl_load
-    def patched_pl_load(*args, **kwargs):
-        kwargs['weights_only'] = False
-        return orig_pl_load(*args, **kwargs)
-    cloud_io.pl_load = patched_pl_load
-else:
-    print("Не удалось найти функцию загрузки чекпойнта в pytorch_lightning.utilities.cloud_io")
+orig_torch_load = torch.load
+def patched_torch_load(*args, **kwargs):
+    kwargs['weights_only'] = False
+    return orig_torch_load(*args, **kwargs)
+torch.load = patched_torch_load
 
 @handle_ddp_subprocess()
 @hydra.main(config_path='../configs/training', config_name='tiny_test.yaml')
