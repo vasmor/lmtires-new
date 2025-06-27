@@ -17,6 +17,7 @@ from pytorch_lightning import Trainer
 from pytorch_lightning.callbacks import ModelCheckpoint
 from pytorch_lightning.loggers import TensorBoardLogger
 from pytorch_lightning.plugins import DDPPlugin
+import pytorch_lightning.utilities.cloud_io as cloud_io
 
 from saicinpainting.training.trainers import make_training_model
 from saicinpainting.utils import register_debug_signal_handlers, handle_ddp_subprocess, handle_ddp_parent_process, \
@@ -24,6 +25,11 @@ from saicinpainting.utils import register_debug_signal_handlers, handle_ddp_subp
 
 LOGGER = logging.getLogger(__name__)
 
+orig_pl_load = cloud_io.pl_load
+def patched_pl_load(*args, **kwargs):
+    kwargs['weights_only'] = False
+    return orig_pl_load(*args, **kwargs)
+cloud_io.pl_load = patched_pl_load
 
 @handle_ddp_subprocess()
 @hydra.main(config_path='../configs/training', config_name='tiny_test.yaml')
