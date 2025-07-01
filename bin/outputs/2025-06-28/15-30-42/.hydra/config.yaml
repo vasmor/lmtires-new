@@ -1,20 +1,16 @@
 indir: C:/ai-product-image-project/valid-dataset/val_images
 outdir: C:/ai-product-image-project/valid-dataset/lama_eval_predicts
 maskdir: C:/ai-product-image-project/valid-dataset/val_masks
-
 model:
   path: C:/ai-product-image-project/lama-local/outputs/2025-06-25/21-15-36
   checkpoint: last.ckpt
-
 dataset:
   kind: default
   img_suffix: .jpg
   pad_out_to_modulo: 128
-
 device: cpu
 out_key: inpainted
-
-refine: False
+refine: false
 refiner:
   gpu_ids: 0
   modulo: ${dataset.pad_out_to_modulo}
@@ -23,5 +19,4 @@ refiner:
   min_side: 512
   max_scales: 3
   px_budget: 1800000
-
-batch_size: 1 
+batch_size: 1

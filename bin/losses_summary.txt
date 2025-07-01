@@ -1,0 +1,17 @@
+Файл: ..\outputs\2025-06-27\13-18-51\tb_logs\13-18-51\version_0\losses_metrics.csv
+Доступные лоссы/метрики: ['epoch', 'hp_metric', 'train_gen_adv', 'train_gen_l1', 'train_gen_pl']
+
+epoch:
+  min=20.00000, max=39.00000, mean=29.50000, last=39.00000
+
+hp_metric:
+  min=-1.00000, max=-1.00000, mean=-1.00000, last=-1.00000
+
+train_gen_adv:
+  min=0.00000, max=0.00000, mean=0.00000, last=0.00000
+
+train_gen_l1:
+  min=0.00104, max=0.00580, mean=0.00312, last=0.00243
+
+train_gen_pl:
+  min=0.04257, max=0.15548, mean=0.07324, last=0.05516
